@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+{% block title %}Gestion Vehicule GNR{% endblock %}
+{% block content %}
+    <div class="container-fluid  p-4 mb-4">
+        <div class="row">
+            <div class="col-sm-12 col-md-8 offset-md-2 col-lg-8 offset-lg-2 color  mb-4 p-4">
+                <div class="col">
+                    <h1 class="h3 mb-3 font-weight-normal">Gestion Vehicule GNR</h1>
+                </div>
+                <div class="col">
+                    <input type = "button" value = "Retour"  class="btn" style=" background-color: rgba(127, 0, 0, 0.5); color: white" onclick = "history.back()">
+                </div>
+                <br>
+                <div class="col">
+                    <h5>Page {{ pagination.current }} </h5>
+                    {% if pagination.previous is not null %}
+                    <h1><a href="{{ path('VehiculeGNR', {'page': pagination.previous}) }}" style="width: 1000%">&#8592;</a>
+                        {% endif %}
+
+                        {% if pagination.next is null %}
+                    </h1>
+                {% elseif pagination.previous is  null %}
+                    <h1>
+                        {% endif %}
+
+
+
+                        {% if pagination.next is not null %}
+                        <a href="{{ path('VehiculeGNR', {'page': pagination.next}) }}">&#8594;</a></h1>
+                    {% endif %}
+                    <table class="table  table-responsive-lg table-bordered table-striped" style="background-color: rgba(255,0,0, 0.2)">
+                        <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Nom Vehicuke</th>
+                            <th colspan="2">Modifier/supprimer</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        {% for vehicule in articles %}
+                            <tr>
+                                <td>{{ vehicule.id }}</td>
+                                <td>{{ vehicule.namevehicule }}</td>
+                                <td><a href="{{ path('VehiculeGNRModif', {'id':vehicule.id}) }} " onclick="if (confirm('Es-tu certain de vouloir MODIFIER cette donnée?')) commentDelete(1); return false" >modifier</a></td>
+                                <td>
+                                    <a href="{{ path('suppVehiculeGNR', {'id':vehicule.id}) }}" class="text-danger" onclick="if (confirm('Es-tu certain de vouloir SUPPRIMER cette donnée?')) commentDelete(1); return false">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                                        </svg>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+
+
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

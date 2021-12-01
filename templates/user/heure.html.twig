@@ -1,0 +1,367 @@
+{% extends 'base.html.twig' %}
+
+
+{% block script %}
+    <script type="text/javascript">
+        //console.log('wsh bien ou quoi :p');
+        jQuery(function($){
+
+            var ladate=new Date()
+
+            var current = ladate.getMonth();
+            $('.month').hide();
+            $('.month:eq('+current+')').show();
+            var current = current +1;
+            $('.months a#linkMonth'+current).addClass('active');
+
+            $('.months a').click(function(){
+                var month = $(this).attr('id').replace('linkMonth','');
+                console.log(month);
+                console.log(current);
+                if(month != current){
+                    $('#month'+current).slideUp();
+                    $('#month'+month).slideDown();
+                    $('.months a').removeClass('active');
+                    $('.months a#linkMonth').addClass('active');
+                    current=month;
+                    console.log(current);
+                }
+                return false;
+            });
+        });
+    </script>
+{% endblock %}
+
+
+
+{% block title %}Gestion Heure{% endblock %}
+{% block content %}
+
+    <div class="container-fluid  p-4 mb-4">
+        <div class="row">
+            <div class="col-sm-12 col-md-10 offset-md-1 col-lg-4 offset-lg-1 color mb-4 p-4">
+
+                {% for flashError in app.flashes('verify_email_error') %}
+                    <div class="alert alert-danger" role="alert">{{ flashError }}</div>
+                {% endfor %}
+                <h1 class="h3 mb-3 font-weight-normal">Gestion Heure</h1>
+
+
+                {{ form_start(registrationForm) }}
+                <div class="form-group" style="display: none">
+                    {{ form_label(registrationForm.user_id, 'Nom d\'utilisateur') }}
+                    {{ form_widget(registrationForm.user_id, {'attr': {'class': 'form-control' }}) }}
+                    <small class="text-danger">{{ form_errors(registrationForm.user_id) }}</small>
+
+                </div>
+                <div class="form-group">
+                    {{ form_label(registrationForm.date, 'Date') }}
+                    {{ form_widget(registrationForm.date, {'attr': {'class': 'form-control'}}) }}
+                    <small class="text-danger">{{ form_errors(registrationForm.date) }}</small>
+                </div>
+                 <div class="form-group" >
+                    {{ form_label(registrationForm.id_client, 'id_client') }}
+                    {{ form_widget(registrationForm.id_client, {'attr': {'class': 'form-control'}}) }}
+                    <small class="text-danger">{{ form_errors(registrationForm.id_client) }}</small>
+                    (Ne pas modifier si CP/ABS/formation)
+                </div>
+                <div class="form-group">
+                    {{ form_label(registrationForm.nbre_heure, 'nbre_heure') }}
+                    {{ form_widget(registrationForm.nbre_heure, {'attr': {'class': 'form-control'}}) }}
+                    <small class="text-danger">{{ form_errors(registrationForm.nbre_heure) }}</small>
+                </div>
+                {#  <div class="form-group">
+                    {{ form_label(registrationForm.ville, 'ville') }}
+                    {{ form_widget(registrationForm.ville, {'attr': {'class': 'form-control'}}) }}
+                    <small class="text-danger">{{ form_errors(registrationForm.ville) }}</small>
+                </div#}
+                <div class="form-group">
+                    {{ form_label(registrationForm.abs_maladie, 'abs_maladie') }}
+                    {{ form_widget(registrationForm.abs_maladie, {'attr': {'class': 'form-control'}}) }}
+                    <small class="text-danger">{{ form_errors(registrationForm.abs_maladie) }}</small>
+                </div>
+                <div class="form-group">
+                    {{ form_label(registrationForm.CP, 'CP') }}
+                    {{ form_widget(registrationForm.CP  ,{'attr': {'class': 'form-control'}}) }}
+                    <small class="text-danger">{{ form_errors(registrationForm.CP) }}</small>
+                </div>
+                <div class="form-group">
+                    {{ form_label(registrationForm.formation, 'formation') }}
+                    {{ form_widget(registrationForm.formation  ,{'attr': {'class': 'form-control'}}) }}
+                    <small class="text-danger">{{ form_errors(registrationForm.formation) }}</small>
+                </div>
+                <button type="submit"  class="btn" style="background-color: rgba(127, 0, 0, 0.5); color: white" onclick="if (confirm('Es-tu certain de vouloir AJOUTER cette donnée?')) commentDelete(1); return false">Envoie des données</button>
+                {{ form_end(registrationForm) }}
+
+
+            </div>
+
+            <div class="col-sm-12 col-md-10 offset-md-1 col-lg-5 offset-lg-1 color mb-4 p-4" >
+
+                <h1>Vos dernière entrée</h1>
+                <table class="table  table-responsive table-bordered table-striped" style="background-color: rgba(255,0,0, 0.2)">
+                    <thead>
+                    <tr >
+                        <th >Date</th>
+                        <th >Client</th>
+                        <th >Nbre Heure</th>
+                        <th >ABS / CP /formation</th>
+                        <th >Modification /Supression</th>
+
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for dernierEssence in dernierEssences %}
+                        <tr>
+                            <td >{{ dernierEssence.date|date('d/m/Y') }}</td>
+                            <td >
+                                {{ dernierEssence.idclient }}
+                            </td>
+                            <td >{{ dernierEssence.getNbreHeure }}</td>
+                            {# <td style="border: solid black; background-color: coral">{{ dernierEssence.getVille }}</td> #}
+                            <td >
+                                {% if dernierEssence.getAbsMaladie %}
+                                    ABS
+                                {% endif %}
+                                {% if dernierEssence.getAbsMaladie and dernierEssence.getCP %}
+                                    /
+                                {% endif %}
+                                {% if dernierEssence.getCP %}
+                                    CP
+                                {% endif %}
+                                {% if dernierEssence.getCP and dernierEssence.getformation %}
+                                    /
+                                {% endif %}
+                                {% if dernierEssence.getformation %}
+                                    Formation
+                                {% endif %}
+                            </td>
+                            <td >
+                                <a href="{{ path('heureModif', {'id':dernierEssence.id}) }}" onclick="if (confirm('Es-tu certain de vouloir MODIFIER cette donnée?')) commentDelete(1); return false" >modifier</a>
+                                <a href="{{ path('suppHeure', {'id':dernierEssence.id}) }}" class="text-danger" onclick="if (confirm('Es-tu certain de vouloir SUPPRIMER cette donnée?')) commentDelete(1); return false" >
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                                    </svg>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                {# <div class="period">
+                    <div>
+                    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+                        <a class="navbar-brand" href="#">{{ year }}</a>
+                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mobileMenu1" aria-controls="mobileMenu" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="mobileMenu1">
+                            <ul class="months navbar-nav ml-auto mt-2 mt-lg-0">
+                                {% for  key,monthss in  months %}
+                                    <li class="nav-item ">
+                                        <a class="nav-link" href="#" id="linkMonth{{ key+1 }}"> {{ monthss|slice(0, 3) }}</a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </nav>
+
+                    {% for key,rs in r %}
+                        <div class="month col12" id="month{{ key }}">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    {% for day in days %}
+                                        <th>{{ day}}</th>
+                                    {% endfor %}
+                                </tr>
+                                </thead>
+                                <tbody >
+                                <tr>
+                                    {% for key1,rs1 in rs %}
+                                    {% if key1 <10 %}
+                                        {% set day =  "0%s"|format(key1) %}
+                                    {% else %}
+                                        {% set day =  "%s"|format(key1) %}
+                                    {% endif %}
+                                    {% set time =  "%s/%s/%s"|format(day, key, year) %}
+                                    {% if loop.first and rs1 !=1 %}
+                                        <td colspan="{{ rs1-1 }}"></td>
+                                    {% endif %}
+
+                                    <td style="border: solid black; background-color: coral">
+                                        <div class="coral">
+                                            <div>
+                                                {{ key1 }} <br>
+
+                                                    {% for heuredb_date in heuredb %}
+                                                        {% if heuredb_date.date|date("d/m/Y") == time %}
+                                                            {% if heuredb_date.getAbsMaladie == 1 %}
+                                                                ABS
+                                                                    <a href="{{ path('heureModif', {'id':heuredb_date.getId}) }}">modifier</a>
+                                                                    <a href="{{ path('suppHeure', {'id':heuredb_date.id}) }}" class="text-danger" onclick="confirm('Es-tu certain de vouloir supprimer cet utilisateur?')">
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18">
+                                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                                                                        </svg>
+                                                                    </a><br>
+
+                                                            {% elseif heuredb_date.getCP == 1  %}
+                                                                CP
+                                                                    <a href="{{ path('heureModif', {'id':heuredb_date.getId}) }}">modifier</a>
+                                                                    <a href="{{ path('suppHeure', {'id':heuredb_date.id}) }}" class="text-danger" onclick="confirm('Es-tu certain de vouloir supprimer cet utilisateur?')">
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18">
+                                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                                                                        </svg>
+                                                                    </a><br>
+
+                                                            {% else %}
+                                                                {% for nomclients in nomclient %}
+                                                                        {% if nomclients.getIdClient == heuredb_date.getIdClient %}
+                                                                            {%  set name = nomclients.getNom %}
+                                                                            {{ name }}- {{ heuredb_date.getNbreHeure }}H- {{ heuredb_date.getVille }}
+                                                                            <a href="{{ path('heureModif', {'id':heuredb_date.getId}) }}">modifier</a>
+                                                                            <a href="{{ path('suppHeure', {'id':heuredb_date.id}) }}" class="text-danger" onclick="confirm('Es-tu certain de vouloir supprimer cet utilisateur?')">
+                                                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18">
+                                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                                                                                </svg>
+                                                                            </a><br>
+                                                                        {% endif %}
+                                                                    {% endfor %}
+
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    {% endfor %}
+
+                                            </div>
+                                        </div>
+
+                                    </td>
+
+                                    {% if loop.last  %}
+                                        <td colspan="{{ 7-rs1 }}"></td>
+                                    {% endif %}
+                                    {%  if rs1 == 7 %}
+                                </tr><tr>
+                                    {% endif %}
+                                    {% endfor %}
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endfor %}
+                    </div>
+                </div>
+                #}
+                <a href="{{ path('calendrier')}}" class="btn" style="background-color: rgba(127,0,0,0.5); color: white" >Voir mon calendrier</a>
+
+            </div>
+
+        </div>
+{#
+        <div class="row">
+            <div class="col-sm-12 col-md-10 offset-md-1 col-lg-10 offset-lg-1" style="background-color: #0F83E8">
+                <div class="period">
+
+                        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+                            <a class="navbar-brand" href="#">{{ year }}</a>
+                            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mobileMenu1" aria-controls="mobileMenu" aria-expanded="false" aria-label="Toggle navigation">
+                                <span class="navbar-toggler-icon"></span>
+                            </button>
+                            <div class="collapse navbar-collapse" id="mobileMenu1">
+                                <ul class="months navbar-nav ml-auto mt-2 mt-lg-0">
+                                    {% for  key,monthss in  months %}
+                                        <li class="nav-item ">
+                                            <a class="nav-link" href="#" id="linkMonth{{ key+1 }}"> {{ monthss|slice(0, 3) }}</a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </nav>
+                        {% for key,rs in r %}
+                            <div class="month" id="month{{ key }}">
+                                <table class="table">
+                                    <thead class="thead-dark">
+                                    <tr>
+                                        {% for day in days %}
+                                            <th  class="col">{{ day}}</th>
+                                        {% endfor %}
+                                    </tr>
+                                    </thead>
+                                    <tbody >
+                                    <tr>
+                                        {% for key1,rs1 in rs %}
+                                        {% if key1 <10 %}
+                                            {% set day =  "0%s"|format(key1) %}
+                                        {% else %}
+                                            {% set day =  "%s"|format(key1) %}
+                                        {% endif %}
+                                        {% set time =  "%s/%s/%s"|format(day, key, year) %}
+                                        {% if loop.first and rs1 !=1 %}
+                                            <td colspan="{{ rs1-1 }}"></td>
+                                        {% endif %}
+
+                                            <td style="border: solid black; background-color: coral">
+                                                        {{ key1 }} <br>
+                                                        {% for heuredb_date in heuredb %}
+                                                            {% if heuredb_date.date|date("d/m/Y") == time %}
+                                                                {% if heuredb_date.getAbsMaladie == 1 %}
+                                                                    ABS
+                                                                    <a href="{{ path('heureModif', {'id':heuredb_date.getId}) }}">modifier</a>
+                                                                    <a href="{{ path('suppHeure', {'id':heuredb_date.id}) }}" class="text-danger" onclick="confirm('Es-tu certain de vouloir supprimer cet utilisateur?')">
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18">
+                                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                                                                        </svg>
+                                                                    </a><br>
+
+                                                                {% elseif heuredb_date.getCP == 1  %}
+                                                                    CP
+                                                                    <a href="{{ path('heureModif', {'id':heuredb_date.getId}) }}">modifier</a>
+                                                                    <a href="{{ path('suppHeure', {'id':heuredb_date.id}) }}" class="text-danger" onclick="confirm('Es-tu certain de vouloir supprimer cet utilisateur?')">
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18">
+                                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                                                                        </svg>
+                                                                    </a><br>
+
+                                                                {% else %}
+                                                                    {% for nomclients in nomclient %}
+                                                                        {% if nomclients.getIdClient == heuredb_date.getIdClient %}
+                                                                            {%  set name = nomclients.getNom %}
+                                                                            {{ name }}- {{ heuredb_date.getNbreHeure }}H- {{ heuredb_date.getVille }}
+                                                                            <a href="{{ path('heureModif', {'id':heuredb_date.getId}) }}">modifier</a>
+                                                                            <a href="{{ path('suppHeure', {'id':heuredb_date.id}) }}" class="text-danger" onclick="confirm('Es-tu certain de vouloir supprimer cet utilisateur?')">
+                                                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18">
+                                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                                                                                </svg>
+                                                                            </a><br>
+                                                                        {% endif %}
+                                                                    {% endfor %}
+
+                                                                {% endif %}
+                                                            {% endif %}
+                                                        {% endfor %}
+                                            </td>
+
+                                        {% if loop.last  %}
+                                            {% if rs1 !=7 %}
+                                                <td colspan="{{ 7-rs1 }}"></td>
+                                            {% endif %}
+                                        {% endif %}
+                                        {%  if rs1 == 7 %}
+                                    </tr><tr>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% endfor %}
+
+                </div>
+            </div>
+        </div>
+        #}
+    </div>
+{% endblock %}
+
+
+

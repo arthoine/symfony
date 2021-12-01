@@ -1,0 +1,66 @@
+{% extends 'base.html.twig' %}
+{% block title %}Gestion essence{% endblock %}
+{% block content %}
+    <div class="container-fluid  p-4 mb-4">
+        <div class="row">
+            <div class="col-sm-12 col-md-8 offset-md-2 col-lg-8 offset-lg-2 color  mb-4 p-4">
+                {% for flashError in app.flashes('verify_email_error') %}
+                    <div class="alert alert-danger" role="alert">{{ flashError }}</div>
+                {% endfor %}
+                <h1 class="h3 mb-3 font-weight-normal">Modification de la saisie</h1>
+
+
+                {{ form_start(registrationForm) }}
+                <div class="form-group" >
+                    {{ form_label(registrationForm.user_id, 'Nom d\'utilisateur') }}
+                    {{ form_widget(registrationForm.user_id, {'attr': {'class': 'form-control' }}) }}
+                    <small class="text-danger">{{ form_errors(registrationForm.user_id) }}</small>
+                </div>
+                <div class="form-group">
+                    {{ form_label(registrationForm.date, 'Date') }}
+                    {{ form_widget(registrationForm.date, {'attr': {'class': 'form-control'}}) }}
+                    <small class="text-danger">{{ form_errors(registrationForm.date) }}</small>
+                </div>
+                <div class="form-group">
+                    {{ form_label(registrationForm.id_client, 'id_client') }}
+                    {{ form_widget(registrationForm.id_client, {'attr': {'class': 'form-control'}}) }}
+                    <small class="text-danger">{{ form_errors(registrationForm.id_client) }}</small>
+                </div>
+                <div class="form-group">
+                    {{ form_label(registrationForm.nbre_heure, 'nbre_heure') }}
+                    {{ form_widget(registrationForm.nbre_heure, {'attr': {'class': 'form-control'}}) }}
+                    <small class="text-danger">{{ form_errors(registrationForm.nbre_heure) }}</small>
+                </div>
+                {#<div class="form-group">
+                    {{ form_label(registrationForm.ville, 'ville') }}
+                    {{ form_widget(registrationForm.ville, {'attr': {'class': 'form-control'}}) }}
+                    <small class="text-danger">{{ form_errors(registrationForm.ville) }}</small>
+                </div>#}
+                <div class="form-group">
+                    {{ form_label(registrationForm.abs_maladie, 'abs_maladie') }}
+                    {{ form_widget(registrationForm.abs_maladie, {'attr': {'class': 'form-control'}}) }}
+                    <small class="text-danger">{{ form_errors(registrationForm.abs_maladie) }}</small>
+                </div>
+                <div class="form-group">
+                    {{ form_label(registrationForm.CP, 'CP') }}
+                    {{ form_widget(registrationForm.CP, {'attr': {'class': 'form-control'}}) }}
+                    <small class="text-danger">{{ form_errors(registrationForm.CP) }}</small>
+                </div>
+                <div class="form-group">
+                    {{ form_label(registrationForm.formation, 'Formation') }}
+                    {{ form_widget(registrationForm.formation, {'attr': {'class': 'form-control'}}) }}
+                    <small class="text-danger">{{ form_errors(registrationForm.formation) }}</small>
+                </div>
+                <button type="submit"  class="btn" style="background-color: rgba(127, 0, 0, 0.5); color: white" onclick="if (confirm('Es-tu certain de vouloir AJOUTER cette donnée?')) commentDelete(1); return false">Envoie des données</button>
+                <input type = "button" value = "Retour"  class="btn" style="background-color: rgba(127, 0, 0, 0.5); color: white" onclick = "history.back()">
+                {{ form_end(registrationForm) }}
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

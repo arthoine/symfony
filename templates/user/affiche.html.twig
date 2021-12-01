@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+{% block title %}Gestion essence{% endblock %}
+{% block content %}
+    <div class="container-fluid p-4 ">
+        <div class="row">
+            <div class="col-sm-12 col-md-6 offset-md-3 col-lg-4 offset-lg-4 color">
+                {% for flashError in app.flashes('verify_email_error') %}
+                    <div class="alert alert-danger" role="alert">{{ flashError }}</div>
+                {% endfor %}
+                <h1 class="h3 mb-3 font-weight-normal">affiche de l'essence</h1>
+
+
+                <table>
+                    <thead>
+                    <tr>
+                        <th colspan="2">The table header</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+
+
+                        {% for dernierEssence in dernierEssences %}
+                            <tr>
+                                <td>{{ dernierEssence.date }}</td>
+                                <td>{{ dernierEssence.user }}</td>
+                                <td>{{ dernierEssence.vehicule }}</td>
+                                <td>{{ dernierEssence.volume }}</td>
+                                <td><a href="#">lien</a></td>
+                            </tr>
+                        {% endfor %}
+
+                    </tbody>
+                </table>
+
+
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

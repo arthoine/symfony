@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+{% block title %}Gestion essence{% endblock %}
+{% block content %}
+    <div class="container-fluid  p-4 mb-4">
+        <div class="row">
+            <div class="col-sm-12 col-md-8 offset-md-2 col-lg-8 offset-lg-2 color  mb-4 p-4">
+                {% for flashError in app.flashes('verify_email_error') %}
+                    <div class="alert alert-danger" role="alert">{{ flashError }}</div>
+                {% endfor %}
+                <h1 class="h3 mb-3 font-weight-normal">Modification de la saisie</h1>
+
+
+                {{ form_start(registrationForm) }}
+
+                <div class="form-group" >
+                    {{ form_label(registrationForm.user, 'Nom d\'utilisateur') }}
+                    {{ form_widget(registrationForm.user, {'attr': {'class': 'form-control' }}) }}
+                    <small class="text-danger">{{ form_errors(registrationForm.user) }}</small>
+                </div>
+
+
+
+                <div class="form-group">
+                    {{ form_label(registrationForm.date, 'Date') }}
+                    {{ form_widget(registrationForm.date, {'attr': {'class': 'form-control'}}) }}
+                    <small class="text-danger">{{ form_errors(registrationForm.date) }}</small>
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(registrationForm.vehicule, 'Nom du véhicule') }}
+                    {{ form_widget(registrationForm.vehicule, {'attr': {'class': 'form-control'}}) }}
+                    <small class="text-danger">{{ form_errors(registrationForm.vehicule) }}</small>
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(registrationForm.volume, 'Volume') }}
+                    {{ form_widget(registrationForm.volume, {'attr': {'class': 'form-control'}}) }}
+                    <small class="text-danger">{{ form_errors(registrationForm.volume) }}</small>
+                </div>
+                <button type="submit"  class="btn" style="background-color: rgba(127, 0, 0, 0.5); color: white" onclick="if (confirm('Es-tu certain de vouloir AJOUTER cette donnée?')) commentDelete(1); return false">Envoie des données</button>
+                <input type = "button" value = "Retour"  class="btn" style="background-color: rgba(127, 0, 0, 0.5); color: white" onclick = "history.back()">
+                {{ form_end(registrationForm) }}
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

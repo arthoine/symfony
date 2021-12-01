@@ -1,0 +1,144 @@
+{% extends 'base.html.twig' %}
+{% block script %}
+    <script type="text/javascript">
+        console.log('wsh bien ou quoi :p');
+        jQuery(function($){
+
+            var ladate=new Date()
+
+            var current = ladate.getMonth();
+            $('.month').hide();
+            $('.month:eq('+current+')').show();
+            var current = current +1;
+            $('.months a#linkMonth'+current).addClass('active');
+
+            $('.months a').click(function(){
+                var month = $(this).attr('id').replace('linkMonth','');
+                console.log(month);
+                console.log(current);
+                if(month != current){
+                    $('#month'+current).slideUp();
+                    $('#month'+month).slideDown();
+                    $('.months a').removeClass('active');
+                    $('.months a#linkMonth').addClass('active');
+                    current=month;
+                    console.log(current);
+                }
+                return false;
+            });
+        });
+    </script>
+{% endblock %}
+{% block title %}Calendrier{% endblock %}
+{% block content %}
+        <div class="container-fluid p-4">
+            <div class="period  col-md-12  col-lg-8 offset-lg-2 color mb-4 p-4">
+
+                <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+                    <a class="navbar-brand" href="#">{{ year }}</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mobileMenu1" aria-controls="mobileMenu" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="mobileMenu1">
+                        <ul class="months navbar-nav ml-auto mt-2 mt-lg-0">
+                            {% for  key,monthss in  months %}
+                                <li class="nav-item ">
+                                    <a class="nav-link" href="#" id="linkMonth{{ key+1 }}"> {{ monthss|slice(0, 3) }}</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </nav>
+                {% for key,rs in r %}
+                    <div class="month" id="month{{ key }}">
+                        <table  class="table  table-responsive table-bordered table-striped" style="background-color: rgba(255,0,0, 0.2)">
+                            <thead>
+                            <tr>
+                                {% for day in days %}
+                                    <th>{{ day}}</th>
+                                {% endfor %}
+                            </tr>
+                            </thead>
+                            <tbody >
+                            <tr>
+                                {% for key1,rs1 in rs %}
+                                {% if key1 <10 %}
+                                    {% set day =  "0%s"|format(key1) %}
+                                {% else %}
+                                    {% set day =  "%s"|format(key1) %}
+                                {% endif %}
+                                {% set time =  "%s/%s/%s"|format(day, key, year) %}
+                                {% if loop.first and rs1 !=1 %}
+                                    <td colspan="{{ rs1-1 }}"></td>
+                                {% endif %}
+
+                                <td>
+                                    {{ key1 }} <br>
+                                    {% for heuredb_date in heuredb %}
+                                        {% if heuredb_date.date|date("d/m/Y") == time %}
+                                            {% if heuredb_date.getAbsMaladie  or heuredb_date.getCP  or heuredb_date.getformation  %}
+
+                                                {% if heuredb_date.getAbsMaladie %}
+                                                    ABS
+                                                {% endif %}
+                                                {% if heuredb_date.getAbsMaladie and heuredb_date.getCP %}
+                                                    /
+                                                {% endif %}
+                                                {% if  heuredb_date.getCP %}
+                                                    CP
+                                                {% endif %}
+                                                {% if  heuredb_date.getCP and heuredb_date.getformation %}
+                                                    /
+                                                {% endif %}
+                                                {% if heuredb_date.getformation %}
+                                                    Formation
+                                                {% endif %}
+
+
+
+                                                <a href="{{ path('heureModif', {'id':heuredb_date.getId}) }}" onclick="if (confirm('Es-tu certain de vouloir MODIFIER cette donnée?')) commentDelete(1); return false" >modifier</a>
+                                                <a href="{{ path('suppHeure', {'id':heuredb_date.id}) }}" class="text-danger" onclick="if (confirm('Es-tu certain de vouloir SUPPRIMER cette donnée?')) commentDelete(1); return false" >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                                                    </svg>
+                                                </a><br>
+                                            {% else %}
+                                                {% for nomclients in nomclient %}
+                                                    {% if nomclients.getIdClient == heuredb_date.getIdClient %}
+                                                        {%  set name = nomclients.getNom %}
+                                                        {{ name }}- {{ heuredb_date.getNbreHeure }}H{#- {{ heuredb_date.getVille }}#}
+                                                        <a href="{{ path('heureModif', {'id':heuredb_date.getId}) }}" onclick="if (confirm('Es-tu certain de vouloir MODIFIER cette donnée?')) commentDelete(1); return false" >modifier</a>
+                                                        <a href="{{ path('suppHeure', {'id':heuredb_date.id}) }}" class="text-danger" onclick="if (confirm('Es-tu certain de vouloir SUPPRIMER cette donnée?')) commentDelete(1); return false" >
+                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                                                            </svg>
+                                                        </a><br>
+                                                    {% endif %}
+                                                {% endfor %}
+
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endfor %}
+                                </td>
+
+                                {% if loop.last  %}
+                                    {% if rs1 !=7 %}
+                                        <td colspan="{{ 7-rs1 }}"></td>
+                                    {% endif %}
+                                {% endif %}
+                                {%  if rs1 == 7 %}
+                            </tr><tr>
+                                {% endif %}
+                                {% endfor %}
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                {% endfor %}
+                <input type = "button" value = "Retour"  class="btn" style="background-color: rgba(127, 0, 0, 0.5); color: white" onclick = "history.back()">
+
+            </div>
+        </div>
+
+
+{% endblock %}

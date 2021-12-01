@@ -1,0 +1,227 @@
+{% extends 'base.html.twig' %}
+
+{% block javascripts %}
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@4.1.0/main.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@4.1.0/main.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@4.1.0/main.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@4.1.0/main.min.js"></script>
+
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', () => {
+            var calendarEl = document.getElementById('calendar-holder');
+
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                defaultView: 'dayGridMonth',
+                editable: true,
+                eventSources: [
+                    {
+                        url: "{{ path('fc_load_events') }}",
+                        method: "POST",
+                        extraParams: {
+                            filters: JSON.stringify({})
+                        },
+                        failure: () => {
+                            // alert("There was an error while fetching FullCalendar!");
+                        },
+                    },
+                ],
+                header: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay',
+                },
+                plugins: [ 'interaction', 'dayGrid', 'timeGrid' ], // https://fullcalendar.io/docs/plugin-index
+                timeZone: 'UTC',
+            });
+            calendar.render();
+        });
+    </script>
+{% endblock %}
+
+
+
+
+
+{% block title %}Gestion essence{% endblock %}
+{% block content %}
+    <div class="container p-4 color">
+        <div class="row">
+            <div class="col-sm-12 col-md-6 offset-md-3 col-lg-4 offset-lg-4">
+                {% for flashError in app.flashes('verify_email_error') %}
+                    <div class="alert alert-danger" role="alert">{{ flashError }}</div>
+                {% endfor %}
+                <h1 class="h3 mb-3 font-weight-normal">Gestion de l'essence</h1>
+
+
+                {{ form_start(registrationForm) }}
+                <div class="form-group" >
+                    {{ form_label(registrationForm.user_id, 'Nom d\'utilisateur') }}
+                    {{ form_widget(registrationForm.user_id, {'attr': {'class': 'form-control' }}) }}
+                    <small class="text-danger">{{ form_errors(registrationForm.user_id) }}</small>
+                </div>
+                <div class="form-group">
+                    {{ form_label(registrationForm.date, 'Date') }}
+                    {{ form_widget(registrationForm.date, {'attr': {'class': 'form-control'}}) }}
+                    <small class="text-danger">{{ form_errors(registrationForm.date) }}</small>
+                </div>
+                <div class="form-group">
+                    {{ form_label(registrationForm.id_client, 'id_client') }}
+                    {{ form_widget(registrationForm.id_client, {'attr': {'class': 'form-control'}}) }}
+                    <small class="text-danger">{{ form_errors(registrationForm.id_client) }}</small>
+                </div>
+                <div class="form-group">
+                    {{ form_label(registrationForm.nbre_heure, 'nbre_heure') }}
+                    {{ form_widget(registrationForm.nbre_heure, {'attr': {'class': 'form-control'}}) }}
+                    <small class="text-danger">{{ form_errors(registrationForm.nbre_heure) }}</small>
+                </div>
+                <div class="form-group">
+                    {{ form_label(registrationForm.ville, 'ville') }}
+                    {{ form_widget(registrationForm.ville, {'attr': {'class': 'form-control'}}) }}
+                    <small class="text-danger">{{ form_errors(registrationForm.ville) }}</small>
+                </div>
+                <div class="form-group">
+                    {{ form_label(registrationForm.abs_maladie, 'abs_maladie') }}
+                    {{ form_widget(registrationForm.abs_maladie, {'attr': {'class': 'form-control'}}) }}
+                    <small class="text-danger">{{ form_errors(registrationForm.abs_maladie) }}</small>
+                </div>
+                <div class="form-group">
+                    {{ form_label(registrationForm.CP, 'CP') }}
+                    {{ form_widget(registrationForm.CP, {'attr': {'class': 'form-control'}}) }}
+                    <small class="text-danger">{{ form_errors(registrationForm.CP) }}</small>
+                </div>
+                <button type="submit"  class="btn">Envoie des données</button>
+                {{ form_end(registrationForm) }}
+
+
+                <table>
+                    <thead>
+                    <tr>
+                        <th colspan="2">Vos dernières entré</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for dernierEssence in dernierEssences %}
+                        <tr>
+                            <td>{{ dernierEssence.date|date('d/m/Y') }}</td>
+                            <td>{{ dernierEssence.getUserId }}</td>
+                            <td>{{ dernierEssence.getIdClient }}</td>
+                            <td>{{ dernierEssence.getNbreHeure }}</td>
+                            <td>{{ dernierEssence.getVille }}</td>
+                            <td>{{ dernierEssence.getAbsMaladie }}</td>
+                            <td>{{ dernierEssence.getCP }}</td>
+                            <td><a href="{{ path('heureModif', {'id':dernierEssence.id}) }}">modifier</a></td>
+                            <td>
+                                <a href="{{ path('suppHeure', {'id':dernierEssence.id}) }}" class="text-danger" onclick="confirm('Es-tu certain de vouloir supprimer cet utilisateur?')">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                                    </svg>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                
+                {#
+                time can be any string acceptable by http://www.php.net/strtotime, the
+                template will output that time's month.
+                If you don't want to pass in a date you can set time like this:
+                {% set time = "now"|date("U") %}
+                {% set time = "December 2012"|date("U") %}
+                How ever you want to output items onto the calendar is a different issue,
+                but I'd assume pushing everything into an array numerically indexed by that day:
+                $days = array(1=>array('Something on the first'),31=>array('Halloween'));
+                #}
+                {% set time = "now"|date("U") %}
+                <table>
+                    <thead>
+                    <tr>
+                        <th colspan="7" class="center">
+                            {{ time|date('F') }}
+                        </th>
+                    </tr>
+                    <tr>
+                        <th width="15%">Lundi</th>
+                        <th width="15%">Mardi</th>
+                        <th width="16%">Mercredi</th>
+                        <th width="15%">Jeudi</th>
+                        <th width="15%">Vedredi</th>
+                        <th width="12%">Samedi</th>
+                        <th width="12%">Dimanche</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        {% set daysInMonth = time|date('t') %}
+                        {% set startDow = time|date('F 1\\s\\t Y')|date('N') - 1 %}
+                        {% set dow = startDow %}
+                        {% for day in range(1,daysInMonth) %}
+                        {% if loop.first and startDow != 0 %}
+                            <td colspan="{{ startDow }}"></td>
+                        {% endif %}
+                        <td>
+                            <div>
+                                <div>{{ day }}</div>
+                                <div>
+                                    {# ////////////////////////////////////////////////////////////// #}
+
+                                    {% if startDow == startDow  %}
+
+                                        <a href='#'>{{ time|date() }}</a>
+
+
+                                        {#<tr>
+                                            <td>{{ dernierEssence.date|date('d/m/Y') }}</td>
+                                            <td>{{ dernierEssence.getUserId }}</td>
+                                            <td>{{ dernierEssence.getIdClient }}</td>
+                                            <td>{{ dernierEssence.getNbreHeure }}</td>
+                                            <td>{{ dernierEssence.getVille }}</td>
+                                            <td>{{ dernierEssence.getAbsMaladie }}</td>
+                                            <td>{{ dernierEssence.getCP }}</td>
+                                            <td><a href="{{ path('heureModif', {'id':dernierEssence.id}) }}">modifier</a></td>
+                                            <td>
+                                                <a href="{{ path('suppHeure', {'id':dernierEssence.id}) }}" class="text-danger" onclick="confirm('Es-tu certain de vouloir supprimer cet utilisateur?')">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                                                    </svg>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}#}
+                                    {% endif %}
+
+                                    {# ////////////////////////////////////////////////////////////// #}
+                                    {# day content here #}
+                                </div>
+                            </div>
+                        </td>
+                        {% if loop.last and dow != 6 %}
+                            <td colspan="{{ 6 - dow }}">&nbsp;</td>
+                        {% endif %}
+                        {% if dow == 6 %}
+                        {% set dow = 0 %}
+                    </tr>
+                    <tr>
+                        {% else %}
+                            {% set dow = dow + 1 %}
+                        {% endif %}
+                        {% endfor %}
+                    </tr>
+                    </tbody>
+                </table>
+
+
+
+
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+

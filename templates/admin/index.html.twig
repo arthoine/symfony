@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin{% endblock %}
+
+{% block content %}
+    <div class="container mt-4">
+
+        <div class="row mt-4">
+            <h2 class="col">Utilisateurs</h2>
+            <div class="col-12">
+                <table class="table">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Userid</th>
+                        <th scope="col">Username</th>
+                        <th scope="col">Roles</th>
+                        <th scope="col" style="max-width: 50px; text-align: center">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% set i = 1 %}
+                    {% for user in users %}
+                        <tr>
+                            <th scope="row">{{ i }}</th>
+                            <td>{{ user.username }}</td>
+                            <td>{{ user.userid }}</td>
+                            <td>
+                                {% if user.hasRoles('ROLE_ADMIN') %}
+                                    <small class="badge badge-success">admin.</small>
+                                {% elseif user.hasRoles('ROLE_MODERATOR') %}
+                                    <small class="badge badge-primary">moderateur</small>
+                                {% else %}
+                                    <small class="badge badge-warning">user</small>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                <a href="" class="text-danger" onclick="confirm('Es-tu certain de vouloir supprimer cette saisie?')">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+
+                                    </svg>
+                                </a>
+                                <a href="{{ path('app_reset_password', {'id':user.userid}) }}">Mdp oublié</a>
+                            </td>
+                        </tr>
+                        {% set i = i+1 %}
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}

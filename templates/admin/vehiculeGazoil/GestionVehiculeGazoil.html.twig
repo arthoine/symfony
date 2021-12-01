@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion Vehicule Gazoil
+{% endblock %}
+
+{% block content %}
+
+    {% if is_granted('ROLE_USER') %}
+        <div class="container-fluid  p-4 mb-4">
+            <div class="row justify-content-center">
+                <div class="col-sm-10 col-md-8  col-lg-4  color  mb-4 p-4">
+                    <h1 class="nav-link">Gestion Vehicule Gazoil</h1>
+                    <div class="row p-2">
+                        <div class="col">
+                            <a class="btn" style="background-color: rgba(127, 0, 0, 0.5); color: white" href="{{ path('VehiculeGazoilAdd') }}">Ajout vehicule Gazoil</a>
+                        </div>
+                    </div>
+                    <div class="row p-2">
+                        <div class="col">
+                            <a class="btn" style="background-color: rgba(127, 0, 0, 0.5); color: white" href="{{ path('VehiculeGazoil') }}">Gestion Vehicule Gazoil</a>
+                        </div>
+                    </div>
+                    <div class="row p-2">
+                        <div class="col">
+                            <input type = "button" value = "Retour"  class="btn" style=" background-color: rgba(127, 0, 0, 0.5); color: white" onclick = "history.back()">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+
+
+{% endblock %}
